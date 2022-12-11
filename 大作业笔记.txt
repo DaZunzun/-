@@ -1,0 +1,104 @@
+首先需要将数据归一化
+然后计算
+结果
+
+-2.4225124795613935 2.035446716939722 
+-10.242786240134988 1.9311104534771062 
+4.4585535263253036 1.719747904812375 -1.5386365181886572
+
+代码
+import random
+J_history = np.zeros((1000000,1))
+#准备工作：安装numpy、pandas包，csv文件转为数值型，之后修改出入输出地址即可。本文测试数据是点shp提取多种遥感指数导出的csv，第一行为列名
+ 
+import numpy as np
+import pandas as pd
+ 
+def max_min_normalization(data_value):
+    """
+    函数主体，归一化处理
+    Data normalization using max value and min value
+    Args:
+        data_value: The data to be normalized
+    """
+    data_shape = data_value.shape
+    print(data_value.shape)
+    data_rows = data_shape[0]
+    data_cols = data_shape[1]
+    new_data=np.zeros(shape=(data_rows,data_cols))
+    for i in range(0, data_rows, 1):
+        for j in range(0, data_cols, 1):
+            data_col_min_values = min(data_value[:,j])
+            data_col_max_values = max(data_value[:,j])
+            new_data[i][j] = (data_value[i][j] - data_col_min_values) / (data_col_max_values - data_col_min_values)
+    return new_data
+x2=max_min_normalization(x2)
+print(x2)
+def diedai(x,y):
+    m=len(x)
+    print(m)
+    a=1.1
+    b=4.5
+    c=-10
+    d=4
+    e=5
+    f=2
+    g=3
+    flag=True
+    n=0
+    arf=0.001
+    while flag:
+        sum1=0
+        sum2=0
+        sum3=0
+        sum4=0
+        sum5=0
+        sum6=0
+        sum7=0
+        train66=[]
+        for i in range(40):
+            train66.append(random.randint(0,m-1))
+        for i in range(40):
+            s=train66[i]
+            sum1=sum1+x[s][0]*(1/(1+np.exp(-a*x[s][0]-b*x[s][1]-c*x[s][2]-d*x[s][3]-e*x[s][4]-f*x[s][5]-g*x[s][6]))-y[s])
+            sum2=sum2+x[s][1]*(1/(1+np.exp(-a*x[s][0]-b*x[s][1]-c*x[s][2]-d*x[s][3]-e*x[s][4]-f*x[s][5]-g*x[s][6]))-y[s])
+            sum3=sum3+x[s][2]*(1/(1+np.exp(-a*x[s][0]-b*x[s][1]-c*x[s][2]-d*x[s][3]-e*x[s][4]-f*x[s][5]-g*x[s][6]))-y[s])
+            sum4=sum4+x[s][3]*(1/(1+np.exp(-a*x[s][0]-b*x[s][1]-c*x[s][2]-d*x[s][3]-e*x[s][4]-f*x[s][5]-g*x[s][6]))-y[s])
+            sum5=sum5+x[s][4]*(1/(1+np.exp(-a*x[s][0]-b*x[s][1]-c*x[s][2]-d*x[s][3]-e*x[s][4]-f*x[s][5]-g*x[s][6]))-y[s])
+            sum6=sum6+x[s][5]*(1/(1+np.exp(-a*x[s][0]-b*x[s][1]-c*x[s][2]-d*x[s][3]-e*x[s][4]-f*x[s][5]-g*x[s][6]))-y[s])
+            sum7=sum7+x[s][6]*(1/(1+np.exp(-a*x[s][0]-b*x[s][1]-c*x[s][2]-d*x[s][3]-e*x[s][4]-f*x[s][5]-g*x[s][6]))-y[s])
+
+        a=a-arf*sum1/40
+        b=b-arf*sum2/40
+        c=c-arf*sum3/40
+        d=d-arf*sum4/40
+        e=e-arf*sum5/40
+        f=f-arf*sum6/40
+        g=g-arf*sum7/40
+
+        n=n+1
+        theta=np.zeros((7,1))
+        theta[0]=a
+        theta[1]=b
+        theta[2]=c
+        theta[3]=d
+        theta[4]=e
+        theta[5]=f
+        theta[6]=g
+        J_history[n] = computeCost(xx2,yy2,theta)
+        if abs(arf*sum1/40)<0.00001 and abs(arf*sum2/40)<0.00001 and abs(arf*sum3/40)<0.00001 and abs(arf*sum4/40)<0.00001 and abs(arf*sum5/40)<0.00001 and abs(arf*sum6/40)<0.00001 and abs(arf*sum7/40)<0.00001:
+            flag=False
+        n=n+1
+    return a,b,c,d,e,f,g
+a,b,c,d,e,f,g=diedai(x2,y2)
+print(a,b,c,d,e,f,g)
+
+# 损失函数应该没啥问题了
+def computeCost(x1, y1, theta):
+    z = np.size(x1[:,0])
+    J = 0
+    for s in range(z):
+        J=J+np.log((1-y1[s])*(np.exp(np.dot(-theta.T,x1[s])))/(1+np.exp(np.dot(-theta.T,x1[s])))+(1/(1+np.exp(np.dot(-theta.T,x1[s])))*(y1[s])))
+    J=J*(-1/z)
+#     print(J)
+    return J
